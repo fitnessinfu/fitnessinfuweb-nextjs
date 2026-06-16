@@ -1,6 +1,7 @@
 import '@/styles/globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import PremiumPopup from '@/components/PremiumPopup';
 
 export const metadata = {
   title: 'Fitnessinfu Performance & Wellness | High Performance Training',
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <Navbar />
+        <PremiumPopup />
         {children}
         <Footer />
       </body>

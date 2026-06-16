@@ -64,6 +64,11 @@ export default function Navbar() {
               TDEE Calculator
             </Link>
           </li>
+          <li>
+            <Link href="/premium-courses" onClick={closeMenu} className="nav-link-premium">
+              Premium Courses
+            </Link>
+          </li>
           <li>{navLink('#contact', 'Contact')}</li>
         </ul>
 
@@ -108,6 +113,7 @@ export default function Navbar() {
           </>
         )}
         <Link href="/sleep" onClick={closeMenu}>Sleep Test</Link>
+        <Link href="/premium-courses" onClick={closeMenu} className="mob-premium">⭐ Premium Courses</Link>
         {isHome ? (
           <>
             <a href="#contact" onClick={closeMenu}>Contact</a>

@@ -99,7 +99,7 @@ export default function TDEECalculator() {
             <input
               type="text"
               name="name"
-              placeholder="e.g. Ashwin"
+              placeholder="e.g. Aswin Sparky"
               value={formData.name}
               onChange={handleChange}
               required
