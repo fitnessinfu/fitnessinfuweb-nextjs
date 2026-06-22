@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import FadeUp from './FadeUp';
+import heroImage from '../public/image.png';
 
 export default function Hero() {
   return (
@@ -69,7 +70,7 @@ export default function Hero() {
         style={{ position: 'absolute', bottom: 0, right: 0, height: '90%', width: '50%' }}
       >
         <Image
-          src="/image.png"
+          src={heroImage}
           alt="Fitness Coach"
           fill
           style={{ objectFit: 'contain', objectPosition: 'bottom right' }}
