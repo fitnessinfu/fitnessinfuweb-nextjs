@@ -22,20 +22,28 @@ export default function EnrollmentModal({ isOpen, onClose, defaultCourse = '' })
 
   // Sync defaultCourse when it changes
   useEffect(() => {
-    if (defaultCourse) setForm((f) => ({ ...f, course: defaultCourse }));
+    if (defaultCourse) {
+      const timer = setTimeout(() => {
+        setForm((f) => ({ ...f, course: defaultCourse }));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
   }, [defaultCourse]);
 
   // Reset form fields when modal opens fresh
   useEffect(() => {
     if (!isOpen) {
-      setForm({
-        name: '',
-        phone: '',
-        email: '',
-        course: defaultCourse || COURSE_OPTIONS[0].value,
-        goals: '',
-        notes: '',
-      });
+      const timer = setTimeout(() => {
+        setForm({
+          name: '',
+          phone: '',
+          email: '',
+          course: defaultCourse || COURSE_OPTIONS[0].value,
+          goals: '',
+          notes: '',
+        });
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, defaultCourse]);
 

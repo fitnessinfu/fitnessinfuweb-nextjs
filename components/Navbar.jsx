@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const pathname = usePathname();
   const isHome = pathname === '/';
 
@@ -17,7 +18,34 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check authentication status
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted) {
+          if (data && data.authenticated && data.user) {
+            setCurrentUser(data.user);
+          } else {
+            setCurrentUser(null);
+          }
+        }
+      })
+      .catch(() => {
+        if (isMounted) setCurrentUser(null);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname]);
+
   const closeMenu = () => setMenuOpen(false);
+
+  if (pathname && pathname.startsWith('/admin')) {
+    return null;
+  }
 
   // For home page, use anchor links; for other pages, use full path
   const navLink = (hash, label) => {
@@ -55,32 +83,59 @@ export default function Navbar() {
           <li>{navLink('#philosophy', 'Philosophy')}</li>
           <li>{navLink('#testimonials', 'Results')}</li>
           <li>
+            <Link href="/courses" onClick={closeMenu} className={pathname.startsWith('/courses') ? 'active-nav-link' : ''}>
+              Courses
+            </Link>
+          </li>
+          <li>
             <Link href="/sleep" onClick={closeMenu}>
               Sleep Test
             </Link>
           </li>
           <li>
             <Link href="/tdee" onClick={closeMenu}>
-              TDEE Calculator
+              TDEE
             </Link>
           </li>
           <li>
             <Link href="/premium-courses" onClick={closeMenu} className="nav-link-premium">
-              Premium Courses
+              Premium
             </Link>
           </li>
           <li>{navLink('#contact', 'Contact')}</li>
         </ul>
 
-        {isHome ? (
-          <a href="#contact" className="nav-cta" onClick={closeMenu}>
-            Book Assessment
-          </a>
-        ) : (
-          <Link href="/#contact" className="nav-cta" onClick={closeMenu}>
-            Book Assessment
-          </Link>
-        )}
+        <div className="nav-actions">
+          {currentUser ? (
+            <Link
+              href="/user/dashboard"
+              className="nav-user-btn authenticated"
+              onClick={closeMenu}
+              id="nav-user-dashboard-btn"
+            >
+              MY DASHBOARD
+            </Link>
+          ) : (
+            <Link
+              href="/user/login"
+              className="nav-user-btn"
+              onClick={closeMenu}
+              id="nav-login-btn"
+            >
+              LOGIN AS USER
+            </Link>
+          )}
+
+          {isHome ? (
+            <a href="#contact" className="nav-cta" onClick={closeMenu}>
+              Book Assessment
+            </a>
+          ) : (
+            <Link href="/#contact" className="nav-cta" onClick={closeMenu}>
+              Book Assessment
+            </Link>
+          )}
+        </div>
 
         <button
           className="nav-hamburger"
@@ -95,6 +150,28 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div className={`nav-mobile ${menuOpen ? 'open' : ''}`}>
+        {currentUser ? (
+          <Link
+            href="/user/dashboard"
+            onClick={closeMenu}
+            className="mob-user-btn authenticated"
+          >
+            👤 MY DASHBOARD ({currentUser.name?.split(' ')[0]})
+          </Link>
+        ) : (
+          <Link
+            href="/user/login"
+            onClick={closeMenu}
+            className="mob-user-btn"
+          >
+            🔑 LOGIN AS USER
+          </Link>
+        )}
+
+        <Link href="/courses" onClick={closeMenu} className="mob-courses-highlight">
+          📚 All Courses (Free &amp; Paid)
+        </Link>
+
         {isHome ? (
           <>
             <a href="#about" onClick={closeMenu}>About</a>
@@ -113,6 +190,7 @@ export default function Navbar() {
           </>
         )}
         <Link href="/sleep" onClick={closeMenu}>Sleep Test</Link>
+        <Link href="/tdee" onClick={closeMenu}>TDEE Calculator</Link>
         <Link href="/premium-courses" onClick={closeMenu} className="mob-premium">⭐ Premium Courses</Link>
         {isHome ? (
           <>

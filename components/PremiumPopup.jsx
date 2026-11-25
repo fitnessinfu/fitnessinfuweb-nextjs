@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const COURSES = [
   {
@@ -31,20 +32,26 @@ const COURSES = [
 ];
 
 export default function PremiumPopup() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const dismissed = localStorage.getItem('fi7_popup_dismissed');
-    if (dismissed) {
-      const dismissedAt = parseInt(dismissed, 10);
-      const hoursElapsed = (Date.now() - dismissedAt) / (1000 * 60 * 60);
-      if (hoursElapsed < 24) return; // Still within 24hr window
+    if (pathname && pathname.startsWith('/admin')) {
+      return;
     }
-    const timer = setTimeout(() => setVisible(true), 2000);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      const dismissed = typeof window !== 'undefined' ? localStorage.getItem('fi7_popup_dismissed') : null;
+      if (dismissed) {
+        const dismissedAt = parseInt(dismissed, 10);
+        const hoursElapsed = (Date.now() - dismissedAt) / (1000 * 60 * 60);
+        if (hoursElapsed < 24) return; // Still within 24hr window
+      }
+      setVisible(true);
+    }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [pathname]);
 
   const handleClose = () => {
     localStorage.setItem('fi7_popup_dismissed', Date.now().toString());
